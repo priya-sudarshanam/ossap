@@ -26,7 +26,7 @@ function ossap_stats_check_credentials(){
   $fpath = variable_get('ossap_stats_private_key_path_to_file');
   $fpkey = $fpath.'/'.$fname.'';
 
-  //create a new instance of Google_client
+  //create a new instance of Google_Client
   $client = new Google_Client();
   // set the application name
   $client->setApplicationName('OSSAP Stats');   
@@ -38,7 +38,7 @@ function ossap_stats_check_credentials(){
   $client->setAccessType($access_type);
   $client->getAccessToken();
 
-  //create a new instance of google_analyticsservice and send the credentials object
+  //create a new instance of Google_AnalyticsService and send the credentials object
   $service = new Google_AnalyticsService($client);
     
   //return the object returned by google analytics
@@ -57,18 +57,16 @@ function ossap_stats_design_output($type){
   $output ='';
   $app_name = 'OSSAP Statistics';
   $metrics_pageviews = 'ga:pageviews';
-  $metrics_visits = 'ga:visits';
   $sort_pageviews = '-ga:pageviews';
-  $sort_visits = '-ga:visits';
   $analytics_id = variable_get('ossap_stats_analytics_id');
+  
   //changed date to auto go back 1 day.
   $start_date = $end_date = date('Y-m-d', strtotime('- 1 day'));
   
   //get credentials 
   $service = ossap_stats_check_credentials();
   $max_results = 25;
-  $sort = $sort_pageviews;
-  $metrics = $metrics_pageviews;
+ 
 
   //set values depending on the type of the parameter
   if ($type == 'visits'){
@@ -79,9 +77,10 @@ function ossap_stats_design_output($type){
   }
 
   //set optional parameters like sort, dimensions etc
-  $optparams = array ('dimensions' => $dimensions,'sort' => $sort,'max-results' => $max_results);
+  $optparams = array ('dimensions' => $dimensions,'sort' => $sort_pageviews,'max-results' => $max_results);
+  
   //get results from the service object
-  $results = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics, $optparams);
+  $results = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics_pageviews, $optparams);
   
   //return the results
   return $results;
@@ -101,6 +100,7 @@ function ossap_stats_return_users(){
 
   //validate the credentials
   $service = ossap_stats_check_credentials();
+  
   //set the optional parameters
   $optparams = array ('dimensions' => $dimensions);
 
