@@ -26,7 +26,7 @@ function ossap_stats_check_credentials(){
   $fpath = variable_get('ossap_stats_private_key_path_to_file');
   $fpkey = $fpath.'/'.$fname.'';
 
-  //create a new instance of Google_Client
+  //create a new instance of Google_client
   $client = new Google_Client();
   // set the application name
   $client->setApplicationName('OSSAP Stats');   
@@ -38,7 +38,7 @@ function ossap_stats_check_credentials(){
   $client->setAccessType($access_type);
   $client->getAccessToken();
 
-  //create a new instance of Google_AnalyticsService and send the credentials object
+  //create a new instance of google_analyticsservice and send the credentials object
   $service = new Google_AnalyticsService($client);
     
   //return the object returned by google analytics
@@ -57,22 +57,18 @@ function ossap_stats_design_output($type){
   $output ='';
   $app_name = 'OSSAP Statistics';
   $metrics_pageviews = 'ga:pageviews';
+  $metrics_visits = 'ga:visits';
   $sort_pageviews = '-ga:pageviews';
+  $sort_visits = '-ga:visits';
   $analytics_id = variable_get('ossap_stats_analytics_id');
-  
   //changed date to auto go back 1 day.
   $start_date = $end_date = date('Y-m-d', strtotime('- 1 day'));
   
   //get credentials 
   $service = ossap_stats_check_credentials();
-<<<<<<< HEAD
-  $max_results = 25;
- 
-=======
   $max_results = 28;
   $sort = $sort_pageviews;
   $metrics = $metrics_pageviews;
->>>>>>> 50c3cdcbe6b27a7b00669f4c762c585cea004f58
 
   //set values depending on the type of the parameter
   if ($type == 'visits'){
@@ -83,12 +79,6 @@ function ossap_stats_design_output($type){
   }
 
   //set optional parameters like sort, dimensions etc
-<<<<<<< HEAD
-  $optparams = array ('dimensions' => $dimensions,'sort' => $sort_pageviews,'max-results' => $max_results);
-  
-  //get results from the service object
-  $results = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics_pageviews, $optparams);
-=======
   $optparams = array ('dimensions' => $dimensions,'sort' => $sort,'max-results' => $max_results);
   
   try {
@@ -98,7 +88,6 @@ function ossap_stats_design_output($type){
     watchdog(WATCHDOG_ERROR, "Unable to get data from Google Data, {$analytics_id}, {$start_date}, {$end_date}, {$metrics}, {$optparams}");
     return array('rows' => array());
   }
->>>>>>> upstream/OSSAP-7.x
   
   //return the results
   return $results;
@@ -118,7 +107,6 @@ function ossap_stats_return_users(){
 
   //validate the credentials
   $service = ossap_stats_check_credentials();
-  
   //set the optional parameters
   $optparams = array ('dimensions' => $dimensions);
 
