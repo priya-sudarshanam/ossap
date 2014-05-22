@@ -156,7 +156,7 @@ function ossap_stats_visited_sites($output_json = FALSE){
   //portals list which should be avoided in the output
   $portals = array('dev.hwpi.harvard.edu','dev.projects.iq.harvard.edu','dev.scholar.harvard.edu',
                    'hwpi.harvard.edu','projects.iq.harvard.edu', 'scholar.harvard.edu',
-				   'staging.hwpi.harvard.edu','staging.projects.iq.harvard.edu','staging.scholar.harvard.edu');
+	           'staging.hwpi.harvard.edu','staging.projects.iq.harvard.edu','staging.scholar.harvard.edu');
  //get results from the design_output function by sending the parameter of type = visits
   
   $results = ossap_stats_design_output('visits'); 
