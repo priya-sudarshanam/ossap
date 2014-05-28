@@ -52,7 +52,7 @@ function ossap_stats_check_credentials(){
 * most frequent page views and page visited
 * returns the pageviews and visit object
 */
-function ossap_stats_design_output($type){
+function ossap_stats_design_output($type, $interval){
   //declare and set the variables 
   $output ='';
   $app_name = 'OSSAP Statistics';
@@ -62,7 +62,7 @@ function ossap_stats_design_output($type){
   $sort_visits = '-ga:visits';
   $analytics_id = variable_get('ossap_stats_analytics_id');
   //changed date to auto go back 1 day.
-  $start_date = $end_date = date('Y-m-d', strtotime('- 1 day'));
+  $end_date = date('Y-m-d', strtotime('- 1 day'));
   
   //get credentials 
   $service = ossap_stats_check_credentials();
@@ -71,11 +71,22 @@ function ossap_stats_design_output($type){
   $metrics = $metrics_pageviews;
 
   //set values depending on the type of the parameter
-  if ($type == 'visits'){
+  if ($type == 'sites'){
     $dimensions = 'ga:hostname';
   }
-  else {
+  else if ($type == 'pages') {
     $dimensions = 'ga:hostname,ga:pagePath';
+  }
+  
+  // set time interval
+  if ($interval == 'day') {
+    $start_date = date('Y-m-d', strtotime('- 1 day'));
+  }
+  else if ($interval == 'week') {
+    $start_date = date('Y-m-d', strtotime('- 7 day'));
+  }
+  else if ($interval == 'month') {
+    $start_date = date('Y-m-d', strtotime('- 30 day'));
   }
 
   //set optional parameters like sort, dimensions etc
