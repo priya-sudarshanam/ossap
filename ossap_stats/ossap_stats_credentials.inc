@@ -52,7 +52,7 @@ function ossap_stats_check_credentials(){
 * most frequent page views and page visited
 * returns the pageviews and visit object
 */
-function ossap_stats_design_output($type){
+function ossap_stats_design_output($type,$data){
   //declare and set the variables 
   $output ='';
   $app_name = 'OSSAP Statistics';
@@ -62,7 +62,10 @@ function ossap_stats_design_output($type){
   $sort_visits = '-ga:visits';
   $analytics_id = variable_get('ossap_stats_analytics_id');
   //changed date to auto go back 1 day.
+  
   $start_date = $end_date = date('Y-m-d', strtotime('- 1 day'));
+  $weeklyStartDate = date('Y-m-d', strtotime('- 8 day'));
+  $monthlyStartDate = date('Y-m-d', strtotime('- 31 day'));
   
   //get credentials 
   $service = ossap_stats_check_credentials();
@@ -83,12 +86,19 @@ function ossap_stats_design_output($type){
   
   try {
     //get results from the service object
-    $results = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics, $optparams);
+    $dailyResults = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics, $optparams);
+	$weeklyResults = $service->data_ga->get($analytics_id, $weeklyStartDate, $weeklyEndDate, $metrics, $optparams);
+	$monthlyResults = $service->data_ga->get($analytics_id, $monthlyStartDate, $monthlyEndDate, $metrics, $optparams);
+	
   } catch (Exception $e) {
     watchdog(WATCHDOG_ERROR, "Unable to get data from Google Data, {$analytics_id}, {$start_date}, {$end_date}, {$metrics}, {$optparams}");
     return array('rows' => array());
   }
-  
+  $results = array(
+   'daily' => $dailyResults,
+   'weekly' => $weeklyResults,
+   'monthly' => $monthlyResults  
+  );
   //return the results
   return $results;
 }
