@@ -36,7 +36,7 @@ function ossap_stats_menu() {
     'title' => t('OpenScholar Board - Most Viewed Pages'),
     'type' => MENU_CALLBACK,
     'page callback' => 'ossap_stats_viewed_pages',
-    'page arguments' => array(TRUE, 'day'),
+    'page arguments' => array(TRUE),
     'access callback' => TRUE,
   );
   
@@ -44,7 +44,7 @@ function ossap_stats_menu() {
     'title' => t('OpenScholar Board - Most Visited Sites'),
     'type' => MENU_CALLBACK,
     'page callback' => 'ossap_stats_visited_sites',
-    'page arguments' => array(TRUE, 'day'),
+    'page arguments' => array(TRUE),
     'access callback' => TRUE,
   );
   
@@ -159,11 +159,23 @@ function ossap_stats_visited_sites($output_json = FALSE){
                    'hwpi.harvard.edu','projects.iq.harvard.edu', 'scholar.harvard.edu',
 	           'staging.hwpi.harvard.edu','staging.projects.iq.harvard.edu','staging.scholar.harvard.edu');
  //get results from the design_output function by sending the parameter of type = visits
-  $type = 'sites';
-  $results = ossap_stats_design_output($type); 
+  $results = ossap_stats_design_output('sites'); 
   
-  //create the array of results after checking whether the url is a portal url
-  foreach($results['daily']['rows'] as $result) {
+  $rows_day = ossap_stats_add_sites_links($results, $portals, 'day');
+  $rows_week = ossap_stats_add_sites_links($results, $portals, 'week');
+  $rows_month = ossap_stats_add_sites_links($results, $portals, 'month');
+
+  $rows = array(
+    'day' => $rows_day,
+    'week' => $rows_week,
+    'month' => $rows_month, 
+  );
+  //return output as an array object;
+  return $rows;
+}
+
+function ossap_stats_add_sites_links($results, $portals, $interval){
+  foreach($results[$interval] as $result) {
     $domain = $result[0];
     $domainUrl = 'http://'.$domain;
     $userCount = $result[1];
@@ -174,8 +186,7 @@ function ossap_stats_visited_sites($output_json = FALSE){
       $rows[] = array(l($domain,$domainUrl,array('external' => TRUE)),'('.$userCount.')');
     }
   }
-
-  //return output as an array object;
+  
   return $rows;
 }
 
@@ -197,11 +208,24 @@ function ossap_stats_viewed_pages($output_json = FALSE){
   ossap_stats_load_includes();
   
   //get results from the design_output function by sending the parameter of type = pageviews
-  $type = 'pages';
-  $results = ossap_stats_design_output($type);
+  $results = ossap_stats_design_output('pages');
 
-  //create the array of results 
-  foreach($results['rows'] as $result) {
+  $rows_day = ossap_stats_add_pages_links($results, 'day');
+  $rows_week = ossap_stats_add_pages_links($results, 'week');
+  $rows_month = ossap_stats_add_pages_links($results, 'month');
+
+  $rows = array(
+    'day' => $rows_day,
+    'week' => $rows_week,
+    'month' => $rows_month, 
+  );
+
+  //return output as an array object;
+  return $rows; 
+}
+
+function ossap_stats_add_pages_links($results, $interval){
+  foreach($results[$interval] as $result) {
     $domain = $result[0];
     $pageViews = $result[1];
     $userCount = $result[2];
@@ -220,7 +244,7 @@ function ossap_stats_viewed_pages($output_json = FALSE){
     }
       $rows[] = array($combined_page,'('.$userCount.')');
   }
-
+  
   //return output as an array object;
   return $rows; 
 }
