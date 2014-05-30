@@ -96,9 +96,9 @@ function ossap_stats_design_output($type){
     return array('rows' => array());
   }
   $results = array(
-   'daily' => $dailyResults,
-   'weekly' => $weeklyResults,
-   'monthly' => $monthlyResults  
+   'day' => $dailyResults,
+   'week' => $weeklyResults,
+   'month' => $monthlyResults  
   );
   //return the results
   return $results;
