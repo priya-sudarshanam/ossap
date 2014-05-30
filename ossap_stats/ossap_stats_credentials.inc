@@ -52,8 +52,9 @@ function ossap_stats_check_credentials(){
 * most frequent page views and page visited
 * returns the pageviews and visit object
 */
-function ossap_stats_design_output($type,$data){
-  //declare and set the variables 
+
+function ossap_stats_design_output($type){
+ //declare and set the variables 
   $output ='';
   $app_name = 'OSSAP Statistics';
   $metrics_pageviews = 'ga:pageviews';
@@ -74,13 +75,13 @@ function ossap_stats_design_output($type,$data){
   $metrics = $metrics_pageviews;
 
   //set values depending on the type of the parameter
-  if ($type == 'visits'){
+  if ($type == 'sites'){
     $dimensions = 'ga:hostname';
   }
-  else {
+  else if ($type == 'pages') {
     $dimensions = 'ga:hostname,ga:pagePath';
   }
-
+  
   //set optional parameters like sort, dimensions etc
   $optparams = array ('dimensions' => $dimensions,'sort' => $sort,'max-results' => $max_results);
   

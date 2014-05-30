@@ -24,20 +24,39 @@ if (isset($getsatisfaction) && !empty($getsatisfaction)) {
     $aggregates["gs-{$key}"] = $value;
   }
 }
-if (isset($visited_sites) && !empty($visited_sites)) {
-  foreach ($visited_sites as $key => $value) {
-    $aggregates["most-visited-sites{$key}"] = "{$value[0]} {$value[1]}";
+if (isset($visited_sites_in_day) && !empty($visited_sites_in_day)) {
+  foreach ($visited_sites_in_day as $key => $value) {
+    $aggregates["most-visited-sites-in-day{$key}"] = "{$value[0]} {$value[1]}";
   }
 }
-if (isset($viewed_pages) && !empty($viewed_pages)) {
-  foreach ($viewed_pages as $key => $value) {
-    $aggregates["most-viewed-pages{$key}"] = "{$value[0]} {$value[1]}";
+if (isset($visited_sites_in_week) && !empty($visited_sites_in_week)) {
+  foreach ($visited_sites_in_week as $key => $value) {
+    $aggregates["most-visited-sites-in-week{$key}"] = "{$value[0]} {$value[1]}";
+  }
+}
+if (isset($visited_sites_in_month) && !empty($visited_sites_in_month)) {
+  foreach ($visited_sites_in_month as $key => $value) {
+    $aggregates["most-visited-sites-in-month{$key}"] = "{$value[0]} {$value[1]}";
+  }
+}
+if (isset($viewed_pages_in_day) && !empty($viewed_pages_in_day)) {
+  foreach ($viewed_pages_in_day as $key => $value) {
+    $aggregates["most-viewed-pages-in-day{$key}"] = "{$value[0]} {$value[1]}";
+  }
+}
+if (isset($viewed_pages_in_week) && !empty($viewed_pages_in_week)) {
+  foreach ($viewed_pages_in_week as $key => $value) {
+    $aggregates["most-viewed-pages-in-week{$key}"] = "{$value[0]} {$value[1]}";
+  }
+}
+if (isset($viewed_pages_in_month) && !empty($viewed_pages_in_month)) {
+  foreach ($viewed_pages_in_month as $key => $value) {
+    $aggregates["most-viewed-pages-in-month{$key}"] = "{$value[0]} {$value[1]}";
   }
 }
 if (isset($rt_visitors) && !empty($rt_visitors)) {
   $aggregates['real-time-visitors'] = $rt_visitors;
 }
-
 
 ?>
 /**
