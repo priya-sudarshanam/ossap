@@ -149,7 +149,6 @@ function ossap_stats_visited_sites($output_json = FALSE){
     drupal_json_output(variable_get('visited_sites',array()));
     return NULL;
   }
-  
   //load the includes
   ossap_stats_load_includes();
 
@@ -162,7 +161,7 @@ function ossap_stats_visited_sites($output_json = FALSE){
   $results = ossap_stats_design_output('visits'); 
   
   //create the array of results after checking whether the url is a portal url
-  foreach($results['rows'] as $result) {
+  foreach($results['daily']['rows'] as $result) {
     $domain = $result[0];
     $domainUrl = 'http://'.$domain;
     $userCount = $result[1];
@@ -195,9 +194,9 @@ function ossap_stats_viewed_pages($output_json = FALSE){
   
   //get results from the design_output function by sending the parameter of type = pageviews
   $results = ossap_stats_design_output('pageviews');
-
+  dvm($results);
   //create the array of results 
-  foreach($results['rows'] as $result) {
+ /* foreach($results['rows'] as $result) {
     $domain = $result[0];
     $pageViews = $result[1];
     $userCount = $result[2];
@@ -218,7 +217,7 @@ function ossap_stats_viewed_pages($output_json = FALSE){
   }
 
   //return output as an array object;
-  return $rows;
+  return $rows; */
 }
 
 /**
