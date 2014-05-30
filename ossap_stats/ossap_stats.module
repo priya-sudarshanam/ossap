@@ -142,11 +142,13 @@ function ossap_stats_load_includes(){
 * ossap_stats_visited_sites()
 * no parameters. returns most frequently visited sites
 */
-function ossap_stats_visited_sites($output_json = FALSE, $interval = 'day'){
+function ossap_stats_visited_sites($output_json = FALSE){
   
   if($output_json) {
     //return output as a json object;
     drupal_json_output(variable_get('visited_sites_in_day',array()));
+    drupal_json_output(variable_get('visited_sites_in_week',array()));
+    drupal_json_output(variable_get('visited_sites_in_month',array()));
     return NULL;
   }
   
@@ -159,7 +161,7 @@ function ossap_stats_visited_sites($output_json = FALSE, $interval = 'day'){
 	           'staging.hwpi.harvard.edu','staging.projects.iq.harvard.edu','staging.scholar.harvard.edu');
  //get results from the design_output function by sending the parameter of type = visits
   $type = 'sites';
-  $results = ossap_stats_design_output($type, $interval); 
+  $results = ossap_stats_design_output($type); 
   
   //create the array of results after checking whether the url is a portal url
   foreach($results['rows'] as $result) {
@@ -182,11 +184,13 @@ function ossap_stats_visited_sites($output_json = FALSE, $interval = 'day'){
 * ossap_stats_viewed_pages()
 * no parameters. returns most frequently viewed pages
 */
-function ossap_stats_viewed_pages($output_json = FALSE, $interval = 'day'){
+function ossap_stats_viewed_pages($output_json = FALSE){
   
   //return output as a json object from the variable.
   if($output_json) {
-    drupal_json_output(variable_get('viewed_pages_in_day', array()));
+    drupal_json_output(variable_get('viewed_pages_day', array()));
+    drupal_json_output(variable_get('viewed_pages_week', array()));
+    drupal_json_output(variable_get('viewed_pages_month', array()));
     return NULL;
   }
   
@@ -195,7 +199,7 @@ function ossap_stats_viewed_pages($output_json = FALSE, $interval = 'day'){
   
   //get results from the design_output function by sending the parameter of type = pageviews
   $type = 'pages';
-  $results = ossap_stats_design_output($type, $interval);
+  $results = ossap_stats_design_output($type);
 
   //create the array of results 
   foreach($results['rows'] as $result) {
@@ -459,22 +463,22 @@ function ossap_stats_block_worker($stat = '') {
     // Add a case statement in the cron worker function for
     //for most_visited_sites, most_viewed_pages and real_time visitors
     case 'visited_sites_in_day':
-      ossap_stats_most_visited_sites_in_day_cron_worker();
+      ossap_stats_most_visited_sites_cron_worker('day');
       break;
     case 'visited_sites_in_week':
-      ossap_stats_most_visited_sites_in_week_cron_worker();
+      ossap_stats_most_visited_sites_cron_worker('week');
       break;
     case 'visited_sites_in_month':
-      ossap_stats_most_visited_sites_in_month_cron_worker();
+      ossap_stats_most_visited_sites_cron_worker('month');
       break;
     case 'viewed_pages_in_day':
-      ossap_stats_most_viewed_pages_in_day_cron_worker();
+      ossap_stats_most_viewed_pages_cron_worker('day');
       break;
     case 'viewed_pages_in_week':
-      ossap_stats_most_viewed_pages_in_week_cron_worker();
+      ossap_stats_most_viewed_pages_cron_worker('week');
       break;
     case 'viewed_pages_in_month':
-      ossap_stats_most_viewed_pages_in_month_cron_worker();
+      ossap_stats_most_viewed_pages_cron_worker('month');
       break;
     /*  
     case 'rt_visitors':
@@ -487,78 +491,46 @@ function ossap_stats_block_worker($stat = '') {
 /**
  * Cron worker callback for OSSAP most_visited_sites
  */
-function ossap_stats_most_visited_sites_in_day_cron_worker(){
+function ossap_stats_most_visited_sites_cron_worker($interval){
   $function = 'ossap_stats_visited_sites';
   if (!function_exists($function)) {
     return;
   }
   
-  $most_visited_sites_in_day = $function(FALSE, 'day');
-  if (!empty($most_visited_sites_in_day)) {
-    variable_set('visited_sites_in_day', $most_visited_sites_in_day);
-  }
-}
-
-function ossap_stats_most_visited_sites_in_week_cron_worker(){
-  $function = 'ossap_stats_visited_sites';
-  if (!function_exists($function)) {
-    return;
-  }
-  
-  $most_visited_sites_in_week = $function(FALSE, 'week');
-  if (!empty($most_visited_sites_in_week)) {
-    variable_set('visited_sites_in_week', $most_visited_sites_in_week);
-  }
-}
-
-function ossap_stats_most_visited_sites_in_month_cron_worker(){
-  $function = 'ossap_stats_visited_sites';
-  if (!function_exists($function)) {
-    return;
-  }
-  
-  $most_visited_sites_in_month = $function(FALSE, 'month');
-  if (!empty($most_visited_sites_in_month)) {
-    variable_set('visited_sites_in_month', $most_visited_sites_in_month);
+  $most_visited_sites = $function();
+  if (!empty($most_visited_sites)) {
+    if ($interval == 'day'){
+      variable_set('visited_sites_in_day', $most_visited_sites['day']);
+    }
+    else if ($interval == 'week'){
+      variable_set('visited_sites_in_week', $most_visited_sites['week']);
+    }
+    else if ($interval == 'month'){
+      variable_set('visited_sites_in_month', $most_visited_sites['month']);
+    }
   }
 }
 
 /**
  * Cron worker callback for OSSAP most_viewed_sites
  */
-function ossap_stats_most_viewed_pages_in_day_cron_worker(){
+function ossap_stats_most_viewed_pages_cron_worker($interval){
   $function = 'ossap_stats_viewed_pages';
   if (!function_exists($function)) {
     return;
   }
   
-  $most_viewed_pages_stats = $function(FALSE, 'day');
-  if (!empty($most_viewed_pages_stats)) {
-    variable_set('viewed_pages', $most_viewed_pages_stats);
-  }
-}
-
-function ossap_stats_most_viewed_pages_in_week_cron_worker(){
-  $function = 'ossap_stats_viewed_pages';
-  if (!function_exists($function)) {
-    return;
-  }
-  
-  $most_viewed_pages_stats = $function(FALSE, 'week');
-  if (!empty($most_viewed_pages_stats)) {
-    variable_set('viewed_pages', $most_viewed_pages_stats);
-  }
-}
-
-function ossap_stats_most_viewed_pages_in_month_cron_worker(){
-  $function = 'ossap_stats_viewed_pages';
-  if (!function_exists($function)) {
-    return;
-  }
-  
-  $most_viewed_pages_stats = $function(FALSE, 'month');
-  if (!empty($most_viewed_pages_stats)) {
-    variable_set('viewed_pages', $most_viewed_pages_stats);
+  $most_viewed_pages = $function();
+  if (!empty($most_viewed_pages)) {
+    if ($interval == 'day'){
+      variable_set('viewed_pages_in_day', $most_viewed_pages['day']);
+    }
+    else if ($interval == 'week'){
+      variable_set('viewed_pages_in_week', $most_viewed_pages['week']);
+    }
+    else if ($interval == 'month'){
+      variable_set('viewed_pages_in_month', $most_viewed_pages['month']);
+    }
   }
 }
 
