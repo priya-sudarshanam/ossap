@@ -461,9 +461,7 @@ function ossap_stats_cron() {
   $queue = DrupalQueue::get('ossap_stats_queue');
   $queue->createQueue();
   // Add an array key as a new cron job key
-  $stats = array('sites', 'getsatisfaction', 'activity', 
-                 'visited_sites_in_day', 'visited_sites_in_week', 'visited_sites_in_month',
-                 'viewed_pages_in_day', 'viewed_pages_in_week', 'viewed_pages_in_month');
+  $stats = array('sites', 'getsatisfaction', 'activity', 'visited_sites', 'viewed_pages');
   foreach ($stats as $stat) {
     $queue->createItem($stat);
   }
@@ -485,23 +483,11 @@ function ossap_stats_block_worker($stat = '') {
       break;
     // Add a case statement in the cron worker function for
     //for most_visited_sites, most_viewed_pages and real_time visitors
-    case 'visited_sites_in_day':
-      ossap_stats_most_visited_sites_cron_worker('day');
+    case 'visited_sites':
+      ossap_stats_most_visited_sites_cron_worker();
       break;
-    case 'visited_sites_in_week':
-      ossap_stats_most_visited_sites_cron_worker('week');
-      break;
-    case 'visited_sites_in_month':
-      ossap_stats_most_visited_sites_cron_worker('month');
-      break;
-    case 'viewed_pages_in_day':
-      ossap_stats_most_viewed_pages_cron_worker('day');
-      break;
-    case 'viewed_pages_in_week':
-      ossap_stats_most_viewed_pages_cron_worker('week');
-      break;
-    case 'viewed_pages_in_month':
-      ossap_stats_most_viewed_pages_cron_worker('month');
+    case 'viewed_pages':
+      ossap_stats_most_viewed_pages_cron_worker();
       break;
     /*  
     case 'rt_visitors':
@@ -514,7 +500,7 @@ function ossap_stats_block_worker($stat = '') {
 /**
  * Cron worker callback for OSSAP most_visited_sites
  */
-function ossap_stats_most_visited_sites_cron_worker($interval){
+function ossap_stats_most_visited_sites_cron_worker(){
   $function = 'ossap_stats_visited_sites';
   if (!function_exists($function)) {
     return;
@@ -522,22 +508,16 @@ function ossap_stats_most_visited_sites_cron_worker($interval){
   
   $most_visited_sites = $function();
   if (!empty($most_visited_sites)) {
-    if ($interval == 'day'){
-      variable_set('visited_sites_in_day', $most_visited_sites['day']);
-    }
-    else if ($interval == 'week'){
-      variable_set('visited_sites_in_week', $most_visited_sites['week']);
-    }
-    else if ($interval == 'month'){
-      variable_set('visited_sites_in_month', $most_visited_sites['month']);
-    }
+    variable_set('visited_sites_in_day', $most_visited_sites['day']);
+    variable_set('visited_sites_in_week', $most_visited_sites['week']);
+    variable_set('visited_sites_in_month', $most_visited_sites['month']);
   }
 }
 
 /**
  * Cron worker callback for OSSAP most_viewed_sites
  */
-function ossap_stats_most_viewed_pages_cron_worker($interval){
+function ossap_stats_most_viewed_pages_cron_worker(){
   $function = 'ossap_stats_viewed_pages';
   if (!function_exists($function)) {
     return;
@@ -545,15 +525,9 @@ function ossap_stats_most_viewed_pages_cron_worker($interval){
   
   $most_viewed_pages = $function();
   if (!empty($most_viewed_pages)) {
-    if ($interval == 'day'){
-      variable_set('viewed_pages_in_day', $most_viewed_pages['day']);
-    }
-    else if ($interval == 'week'){
-      variable_set('viewed_pages_in_week', $most_viewed_pages['week']);
-    }
-    else if ($interval == 'month'){
-      variable_set('viewed_pages_in_month', $most_viewed_pages['month']);
-    }
+    variable_set('viewed_pages_in_day', $most_viewed_pages['day']);
+    variable_set('viewed_pages_in_week', $most_viewed_pages['week']);
+    variable_set('viewed_pages_in_month', $most_viewed_pages['month']);
   }
 }
 
