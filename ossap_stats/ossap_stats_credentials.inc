@@ -88,8 +88,8 @@ function ossap_stats_design_output($type){
   try {
     //get results from the service object
     $dailyResults = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics, $optparams);
-	$weeklyResults = $service->data_ga->get($analytics_id, $weeklyStartDate, $weeklyEndDate, $metrics, $optparams);
-	$monthlyResults = $service->data_ga->get($analytics_id, $monthlyStartDate, $monthlyEndDate, $metrics, $optparams);
+	$weeklyResults = $service->data_ga->get($analytics_id, $weeklyStartDate, $end_date, $metrics, $optparams);
+	$monthlyResults = $service->data_ga->get($analytics_id, $monthlyStartDate, $end_date, $metrics, $optparams);
 	
   } catch (Exception $e) {
     watchdog(WATCHDOG_ERROR, "Unable to get data from Google Data, {$analytics_id}, {$start_date}, {$end_date}, {$metrics}, {$optparams}");
