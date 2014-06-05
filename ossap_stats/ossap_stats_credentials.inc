@@ -58,21 +58,22 @@ function ossap_stats_design_output($type){
   $output ='';
   $app_name = 'OSSAP Statistics';
   $metrics_pageviews = 'ga:pageviews';
-  $metrics_visits = 'ga:visits';
   $sort_pageviews = '-ga:pageviews';
-  $sort_visits = '-ga:visits';
   $analytics_id = variable_get('ossap_stats_analytics_id');
-  //changed date to auto go back 1 day.
-  
+   
+  //set start and end dates for day, week and month
+  //start and end dates for day are same. For week start date is 8 days before
+  //likewise for month it is 31 days earlier. The end date
+  //remains same as end date for day
   $start_date = $end_date = date('Y-m-d', strtotime('- 1 day'));
   $weeklyStartDate = date('Y-m-d', strtotime('- 8 day'));
   $monthlyStartDate = date('Y-m-d', strtotime('- 31 day'));
   
   //get credentials 
   $service = ossap_stats_check_credentials();
+  
+  //max_results is set to 28
   $max_results = 28;
-  $sort = $sort_pageviews;
-  $metrics = $metrics_pageviews;
 
   //set values depending on the type of the parameter
   if ($type == 'sites'){
@@ -83,18 +84,20 @@ function ossap_stats_design_output($type){
   }
   
   //set optional parameters like sort, dimensions etc
-  $optparams = array ('dimensions' => $dimensions,'sort' => $sort,'max-results' => $max_results);
+  $optparams = array ('dimensions' => $dimensions,'sort' => $sort_pageviews,'max-results' => $max_results);
   
   try {
-    //get results from the service object
-    $dailyResults = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics, $optparams);
-	$weeklyResults = $service->data_ga->get($analytics_id, $weeklyStartDate, $end_date, $metrics, $optparams);
-	$monthlyResults = $service->data_ga->get($analytics_id, $monthlyStartDate, $end_date, $metrics, $optparams);
+    //get results from the service object for all three intervals
+    $dailyResults = $service->data_ga->get($analytics_id, $start_date, $end_date, $metrics_pageviews, $optparams);
+    $weeklyResults = $service->data_ga->get($analytics_id, $weeklyStartDate, $end_date, $metrics_pageviews, $optparams);
+    $monthlyResults = $service->data_ga->get($analytics_id, $monthlyStartDate, $end_date, $metrics_pageviews, $optparams);
 	
   } catch (Exception $e) {
     watchdog(WATCHDOG_ERROR, "Unable to get data from Google Data, {$analytics_id}, {$start_date}, {$end_date}, {$metrics}, {$optparams}");
     return array('rows' => array());
   }
+  
+  //add the results to $results array with interval as key
   $results = array(
    'day' => $dailyResults,
    'week' => $weeklyResults,
